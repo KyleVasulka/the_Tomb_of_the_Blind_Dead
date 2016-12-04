@@ -287,11 +287,13 @@ void readMaze(int roomArray[][7], int gameArray[], int & numRooms)
 
 }
 
+//this function returns a random room
 int getRandomRoom(int gameArray[5], int numRooms)
 {
     return (rand() % numRooms);
 }
 
+//this function places a zombie into one of the rooms
 void placeZombie(int roomArray[][7], int gameArray[5], int numRooms)
 {
     int randomRoom = 0;
@@ -299,9 +301,11 @@ void placeZombie(int roomArray[][7], int gameArray[5], int numRooms)
     {
         randomRoom = getRandomRoom(gameArray,numRooms);
     }
-    roomArray[randomRoom][5] = 1;
+    roomArray[randomRoom][ZOMBIE_INDEX] = 1;
+    gameArray[ZOMBIE_ROOM_INDEX] = randomRoom;
 }
 
+//this function places a holy grail into one of the rooms
 void placeGrail(int roomArray[][7], int gameArray[5], int numRooms)
 {
     int randomRoom = 0;
@@ -476,7 +480,10 @@ void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7])
         //check to see if the zombie was in that room
         //if yes then zombie is dead, remove him from the game(room array and zombie room)
         if(checkZombie(roomToShoot, roomArray))
-                roomArray[roomToShoot][ZOMBIE_INDEX] == 0;
+        {
+                roomArray[roomToShoot][ZOMBIE_INDEX] = 0;
+                gameArray[ZOMBIE_ROOM_INDEX] = 0;
+        }
         //if no tell player he missed
         else
         {
@@ -490,5 +497,28 @@ void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7])
     return;
 }
 
+void moveZombie(int gameArray[], int roomArray[][7])
+{
+   // if the zombie is alive
+   if (gameArray[ZOMBIE_ROOM_INDEX])
+   {
+       int direction;
+       //generate random direction for zombie to go
+       direction = rand() % 4;
+
+       //check if the room is free in that direction
+       if(roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction] != 0)
+       {
+           //move zombie
+            roomArray[gameArray[ZOMBIE_ROOM_INDEX]-1][ZOMBIE_INDEX] = 0;
+            roomArray[roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction]][ZOMBIE_INDEX] = 1;
+            gameArray[ZOMBIE_ROOM_INDEX] = roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction];
+       }
+        //if not zombie stays where he is
+    }
+
+   return;
+
+}
 
 
