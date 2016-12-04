@@ -83,6 +83,8 @@ bool isConnected(int targetRoom, int gameArray[], int roomArray[][7]);
 //PART 3 prototypes
 //handels movement of character
 void moveRoom(int roomWanted, int gameArray[], int roomArray[][7]);
+//shoots a room that is next to you to maybe kill a zombie
+void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7]);
 
 int main()
 {
@@ -310,9 +312,9 @@ void placeGrail(int roomArray[][7], int gameArray[5], int numRooms)
     roomArray[randomRoom][6] = 1;
 }
 
-bool checkZombie (int x, int roomArray[][7])
+bool checkZombie (int roomToShoot, int roomArray[][7])
 {
-    if(roomArray[x-1][ZOMBIE_INDEX] == 1)
+    if(roomArray[roomToShoot-1][ZOMBIE_INDEX] == 1)
         return true;
     else
         return false;
@@ -402,6 +404,7 @@ bool isConnected(int targetRoom, int gameArray[], int roomArray[][7])
             return isConnected;
 }
 
+//this function moves what room that you are in
 void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
 {
     //test to see if the given room is connected to the current one
@@ -412,35 +415,35 @@ void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
 
         //-if so set the current room player index to 0, the given room player index to 1 and the current room to the parameter.
 
-        roomArray[gameArray[0]-1][4] = 0;
+        roomArray[gameArray[CURRENT_ROOM_INDEX]-1][PLAYER_INDEX] = 0;
 
-        roomArray[roomWanted - 1][4] = 1;
+        roomArray[roomWanted - 1][PLAYER_INDEX] = 1;
 
-        gameArray[0] = roomWanted;
+        gameArray[CURRENT_ROOM_INDEX] = roomWanted;
 
 
 
        //if the player already had the grail move the grail from the old to the new roomWanted
-       if(gameArray[4] == true)
+       if(gameArray[HAVE_GRAIL_INDEX] == true)
        {
-           for(int i = 0; i < gameArray[3]; i++)
+           for(int i = 0; i < gameArray[NUM_ROOMS_INDEX]; i++)
         {
-            roomArray[i][6] = 0;
+            roomArray[i][GRAIL_INDEX] = 0;
            }
 
-            roomArray[roomWanted - 1][6] = 1;
+            roomArray[roomWanted - 1][GRAIL_INDEX] = 1;
        }
 
         //if player finds the grail in the new room, set haveGrail to true
-        if (checkGrail (gameArray[0], roomArray))
+        if (checkGrail (gameArray[CURRENT_ROOM_INDEX], roomArray))
         {
 
             //if in here the grail is in this room!
-            gameArray[4] = true;
+            gameArray[HAVE_GRAIL_INDEX] = true;
         }
 
         //if the player had the grail with him and is now entered room 1, winner and end game
-        if((gameArray[0] == 1) && gameArray[4])
+        if((gameArray[CURRENT_ROOM_INDEX] == 1) && gameArray[HAVE_GRAIL_INDEX])
         {
 
             winOrLose(1, gameArray);
@@ -450,6 +453,39 @@ void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
     else//if not, let the user know they cannot move there
     {
             cout << "you can not move there, It is not connected to you, please enter a room that is connected to you!";
+    }
+    return;
+}
+
+void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7])
+{
+    //shoots bullet into room given as the parameter
+
+    if(gameArray[NUM_BULLETS_INDEX] <= 0)
+    {
+        cout << "you have no bullets left!";
+        return;
+    }
+
+    //test to see if the given room is connected to the current one,
+    if(isConnected(roomToShoot, gameArray, roomArray))
+    {
+            //if in here it connected
+        //if yes decrement the bullet count
+        gameArray[NUM_BULLETS_INDEX]--;
+        //check to see if the zombie was in that room
+        //if yes then zombie is dead, remove him from the game(room array and zombie room)
+        if(checkZombie(roomToShoot, roomArray))
+                roomArray[roomToShoot][ZOMBIE_INDEX] == 0;
+        //if no tell player he missed
+        else
+        {
+            cout << "you missed! The zombie was not in the room. \n";
+        }
+    }
+     else//if not, let the user know they cannot move there
+    {
+            cout << "you can not shoot there, It is not connected to you, please enter a room that is connected to you!";
     }
     return;
 }
