@@ -64,7 +64,22 @@ void placeGrail(int roomArray[][7], int gameArray[5], int numRooms);
 void setup(int &currentRoom, int &zombieRoom, int &numBullets, int &numRooms, bool &haveGrail, int roomArray[][7], int gameArray[5]);
 
 //PART 2 prototypes
-void checkZombie(int mayBeZombieRoom, int roomArray[][7], int numRooms);
+//returns true if zombie is present
+bool checkZombie (int x, int roomArray[][7]);
+//returns true if grail is present
+bool checkGrail (int x, int roomArray[][7]);
+//return true if Zombie in connected room
+bool checkNearZombie(int numRooms, int roomArray[][7]);
+//returns true if Grail in connected room
+bool checkNearGrail(int x, int roomArray[][7]);
+//displays the winner result
+void winOrLose(bool win, int gameArray[]);
+//displays connected rooms number
+void showConnectedRooms(int &currentRoom, int roomArray[][7]);
+//returns true if room is connected to current room
+bool isConnected(int targetRoom, int gameArray[], int roomArray[][7]);
+
+
 //PART 3 prototypes
 
 int main()
@@ -283,8 +298,95 @@ void placeGrail(int roomArray[][7], int gameArray[5], int numRooms)
     roomArray[randomRoom][6] = 1;
 }
 
-void checkZombie(int mayBeZombieRoom, int roomArray[][7], int numRooms)
+bool checkZombie (int x, int roomArray[][7])
 {
+    if(roomArray[x-1][ZOMBIE_INDEX] == 1)
+        return true;
+    else
+        return false;
+}
 
+//precondition: get room number to be checked
+//postcondition: return true if Grail in the room
+bool checkGrail (int numRooms, int roomArray[][7])
+{
+    if(roomArray[numRooms-1][GRAIL_INDEX] == 1)
+    {
+        cout << "//check grail == true\n";
+        return true;
+    }
+    else
+    {
+        cout << "//check grail == false\n";
+        return false;
+    }
+}
+
+//precondition: get room number to be checked
+//postcondition: return true if Zombie in connected room
+bool checkNearZombie(int numRooms, int roomArray[][7])
+{
+    bool  nearZombie = false;
+    for(int i = 0; i < MAX_ROOMS; i++)
+    for(int j = 0; j < 4; j++)
+    if(roomArray[i][j] == numRooms)                  //locate connected room
+        if(checkZombie((i + 1), roomArray))     //check connected room
+            nearZombie = true;
+            return nearZombie;
+}
+
+
+//precondition: get room number to be checked
+//postcondition: return true if Grail in connected room
+bool checkNearGrail(int x, int roomArray[][7])
+{
+    bool nearGrail = false;
+    for(int i = 0; i < MAX_ROOMS; i++)
+    for(int j = 0; j < 4; j++)
+    if(roomArray[i][j] == x)                  //locate connected room
+    if(checkGrail((i + 1), roomArray))      //check connected room
+    nearGrail = true;
+    return nearGrail;
+}
+
+//precondition: get game variables
+//postcondition: show the winner result, print it out
+void winOrLose(bool win, int gameArray[])
+{
+    if(win)
+    {
+        cout << "\n===========================================================\n"
+        << "YOU HAVE EMERGED FROM THE TEMPLE WITH THE GRAIL!! YOU WIN!!""\n===========================================================\n";
+    }
+    else
+    {
+        cout << "\nAs you walk in the room the zombie sees you and devour you whole!\n"
+                << "\nYOU LOST!\n";
+    }
+    gameArray[CURRENT_ROOM_INDEX] = -1;
+}
+
+//precondition: get current roomNumber
+//postcondition: show connected rooms number
+void showConnectedRooms(int &currentRoom, int roomArray[][7])
+{
+    for(int i = 0; i < MAX_ROOMS; i++)
+        for(int j = 0; j < 4; j++)
+            if(roomArray[i][j] == currentRoom)
+                cout << "Room " << (i + 1) << " is connected to the current room(Room " << currentRoom << ")." << endl ;
+                cout << endl;
+}
+
+//precondition: get a roomNumber
+//postcondition: return true if the room is connected to current room
+bool isConnected(int targetRoom, int gameArray[], int roomArray[][7])
+{
+    bool isConnected = false;
+    //cout << "Please enter a room number to test if it is connected to current room: ";
+    //int x = inputValidation(1, MAX_ROOMS);
+    for(int j = 0; j < 4; j++)
+        if(roomArray[targetRoom-1][j] == gameArray[CURRENT_ROOM_INDEX])
+            isConnected = true;
+            return isConnected;
 }
 
