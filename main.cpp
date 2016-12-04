@@ -379,7 +379,7 @@ void winOrLose(bool win, int gameArray[])
     }
     else
     {
-        cout << "\nAs you walk in the room the zombie sees you and devour you whole!\n"
+        cout << "\nAs you walk in the room the zombie sees you and devours you whole!\n"
                 << "\nYOU LOST!\n";
     }
     gameArray[CURRENT_ROOM_INDEX] = -1;
@@ -454,6 +454,9 @@ void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
             winOrLose(1, gameArray);
             exit(0);
         }
+        //if player goes into the room with the zombie in it, loser and end the game
+    if(gameArray[CURRENT_ROOM_INDEX] == gameArray[ZOMBIE_ROOM_INDEX])
+    winOrLose(false, gameArray);
     }
     else//if not, let the user know they cannot move there
     {
@@ -579,6 +582,13 @@ void doSelection(std::string controll, int gameArray[], int roomArray[][7])
     if(executeMoveZombie && (gameArray[ZOMBIE_ROOM_INDEX] != 0))
     {
         moveZombie(gameArray, roomArray);
+        if(gameArray[CURRENT_ROOM_INDEX] == gameArray[ZOMBIE_ROOM_INDEX])
+        {
+            cout << endl << "THE ZOMBIE STUMBLES INTO THE ROOM, SEES YOU, AND DEVOURS YOU WHOLE!\n"
+                << "\nYOU LOST!\n";
+            gameArray[CURRENT_ROOM_INDEX] = -1;
+
+        }
     }
 }
 
@@ -613,6 +623,7 @@ void waitForMove(int gameArray[], int roomArray[][7])
 
 void checkRoom(int gameArray[7], int roomArray[][7])
 {
+
     //display the current room and number of bullets to the user
     cout <<endl <<  "Current room: " << gameArray[CURRENT_ROOM_INDEX] << endl
     << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
