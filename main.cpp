@@ -603,11 +603,26 @@ void waitForMove(int gameArray[], int roomArray[][7])
 
 
 }
-/*
-    cout << "Current room: " << gameArray[PLAYER_INDEX] << endl
-        << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
 
-        if(gameArray[GRAIL_INDEX])
+void checkRoom(int gameArray[7], int roomArray[][7])
+{
+    //display the current room and number of bullets to the user
+    cout << "Current room: " << gameArray[PLAYER_INDEX] << endl
+    << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
+    //if the player has the grail then say so
+    if(gameArray[GRAIL_INDEX])
         cout << "YOUR HAVE THE GRAIL";
+    //if zombie is nearby, the player can hear it
+    // if the grail is nearby the player can sense it, otherwise do nothing
+    //show rooms connected t this
+    showConnectedRooms(gameArray[])
+    //show the menu and wait on user input
+    waitForMove(gameArray, roomArray)
+}
+/*
+
+
+
+
     */
 
