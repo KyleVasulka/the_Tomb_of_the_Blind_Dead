@@ -88,6 +88,8 @@ void moveRoom(int roomWanted, int gameArray[], int roomArray[][7]);
 void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7]);
 void moveZombie(int gameArray[], int roomArray[][7]);
 bool validateSelection(std::string validate);
+void doSelection(std::string controll, int gameArray[], int roomArray[][7]);
+void waitForMove(int gameArray[], int roomArray[][7]);
 
 int main()
 {
@@ -191,6 +193,10 @@ bool menu(int &currentRoom, int &zombieRoom, int &numBullets, int &numRooms, boo
         readMaze(roomArray, gameArray, numRooms);
         setup(currentRoom, zombieRoom, numBullets, numRooms, haveGrail, roomArray, gameArray);
         printMemory(gameArray, roomArray);
+        while(1)
+        {
+        waitForMove(gameArray, roomArray);
+        }
  int temp;
   while (1)
 {
@@ -568,3 +574,40 @@ void doSelection(std::string controll, int gameArray[], int roomArray[][7])
     //after completing players instructions move zombie
     moveZombie(gameArray, roomArray);
 }
+
+void waitForMove(int gameArray[], int roomArray[][7])
+{
+    bool loopflag = false;
+    std::string validate;
+    //show a command menu to the user. wait for input, then validate the input they give (with validate selection)
+   do
+   {
+        cout << "Menu:" << endl << "Q - quit the game"
+            << endl << "D - print memory"
+            <<endl << "S # - shoot into the indicated room"
+            << endl << "M # - move into the indicated room" << endl;
+        cin >> validate;
+        if(validateSelection(validate))
+        {
+             //once given valid command, execute it
+        doSelection(validate,gameArray,roomArray);
+        loopflag = true;
+        }
+        else
+        {
+            //loop until a valid command is given
+            cout <<endl <<  "That input was not correct!" << endl;
+        }
+   } while(loopflag == false);
+
+
+
+}
+/*
+    cout << "Current room: " << gameArray[PLAYER_INDEX] << endl
+        << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
+
+        if(gameArray[GRAIL_INDEX])
+        cout << "YOUR HAVE THE GRAIL";
+    */
+
