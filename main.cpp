@@ -70,7 +70,7 @@ bool checkZombie (int x, int roomArray[][7]);
 //returns true if grail is present
 bool checkGrail (int x, int roomArray[][7]);
 //return true if Zombie in connected room
-bool checkNearZombie(int numRooms, int roomArray[][7]);
+bool checkNearZombie(int PlayerRoom, int roomArray[][7]);
 //returns true if Grail in connected room
 bool checkNearGrail(int x, int roomArray[][7]);
 //displays the winner result
@@ -343,12 +343,12 @@ bool checkGrail (int roomnumber, int roomArray[][7])
 
 //precondition: get room number to be checked
 //postcondition: return true if Zombie in connected room
-bool checkNearZombie(int numRooms, int roomArray[][7])
+bool checkNearZombie(int playerRoom, int roomArray[][7])
 {
     bool  nearZombie = false;
     for(int i = 0; i < MAX_ROOMS; i++)
     for(int j = 0; j < 4; j++)
-    if(roomArray[i][j] == numRooms)                  //locate connected room
+    if(roomArray[i][j] == playerRoom) //locate connected room
         if(checkZombie((i + 1), roomArray))     //check connected room
             nearZombie = true;
             return nearZombie;
@@ -357,12 +357,12 @@ bool checkNearZombie(int numRooms, int roomArray[][7])
 
 //precondition: get room number to be checked
 //postcondition: return true if Grail in connected room
-bool checkNearGrail(int x, int roomArray[][7])
+bool checkNearGrail(int playerRoom, int roomArray[][7])
 {
     bool nearGrail = false;
     for(int i = 0; i < MAX_ROOMS; i++)
     for(int j = 0; j < 4; j++)
-    if(roomArray[i][j] == x)                  //locate connected room
+    if(roomArray[i][j] == playerRoom)                  //locate connected room
     if(checkGrail((i + 1), roomArray))      //check connected room
     nearGrail = true;
     return nearGrail;
@@ -482,7 +482,8 @@ void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7])
         //if yes then zombie is dead, remove him from the game(room array and zombie room)
         if(checkZombie(roomToShoot, roomArray))
         {
-                roomArray[roomToShoot][ZOMBIE_INDEX] = 0;
+            cout << "You hit and killed the zombie!" << endl;
+                roomArray[roomToShoot - 1][ZOMBIE_INDEX] = 0;
                 gameArray[ZOMBIE_ROOM_INDEX] = 0;
         }
         //if no tell player he missed
@@ -510,18 +511,15 @@ void moveZombie(int gameArray[], int roomArray[][7])
        //check if the room is free in that direction
        if(roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction] != 0)
        {
-           //printMemory(gameArray,roomArray);
            //if in here room is free so move zombie
            //make where the zombie currently is 0
-            cout <<"ganeArray where zombie will be eliminated: " << gameArray[ZOMBIE_ROOM_INDEX]-1;
+
             roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][ZOMBIE_INDEX] = 0;
             //make the new location of the zombie 1
             roomArray[roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction] - 1][ZOMBIE_INDEX] = 1;
             //update gameArray as to the whereabouts of the zombie
             gameArray[ZOMBIE_ROOM_INDEX] = roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction];
-            cout << "Zombie has moved to room " << gameArray[ZOMBIE_ROOM_INDEX];
        }
-       cout << endl << "zombie stayed where he is because of direction:" << direction;
         //if not zombie stays where he is
     }
    return;
@@ -550,17 +548,22 @@ void doSelection(std::string controll, int gameArray[], int roomArray[][7])
     std::string firstLetter = controll.substr(0,1);
     //depending on first char call appropriate function
     int number;
+    bool executeMoveZombie = false;
     //q quits the game
     if(firstLetter.compare("Q") == 0)
         exit(0);
     //D prints memory
     if(firstLetter.compare("D") == 0)
+    {
     printMemory(gameArray, roomArray);
+    executeMoveZombie = false;
+    }
     //S -# shoots the indicated room
     if(firstLetter.compare("S") == 0)
     {
         cin >> number;
         shootRoom(number,gameArray,roomArray);
+        executeMoveZombie = true;
     }
 
     //M -# move into the indicated room
@@ -568,10 +571,15 @@ void doSelection(std::string controll, int gameArray[], int roomArray[][7])
     {
         cin >> number;
         moveRoom(number, gameArray,roomArray);
+        executeMoveZombie = true;
     }
 
-    //after completing players instructions move zombie
-    moveZombie(gameArray, roomArray);
+    //after completing players instructions move zombie except print memory
+    //also not if the zombie is dead
+    if(executeMoveZombie && (gameArray[ZOMBIE_ROOM_INDEX] != 0))
+    {
+        moveZombie(gameArray, roomArray);
+    }
 }
 
 void waitForMove(int gameArray[], int roomArray[][7])
@@ -606,13 +614,13 @@ void waitForMove(int gameArray[], int roomArray[][7])
 void checkRoom(int gameArray[7], int roomArray[][7])
 {
     //display the current room and number of bullets to the user
-    cout << "Current room: " << gameArray[CURRENT_ROOM_INDEX] << endl
+    cout <<endl <<  "Current room: " << gameArray[CURRENT_ROOM_INDEX] << endl
     << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
     //if the player has the grail then say so
     if(gameArray[HAVE_GRAIL_INDEX])
-        cout << "YOUR HAVE THE GRAIL" << endl;
+        cout << "YOU HAVE THE GRAIL" << endl;
     //if zombie is nearby, the player can hear it
-    if (checkNearZombie(gameArray[NUM_ROOMS_INDEX],roomArray))
+    if (checkNearZombie(gameArray[CURRENT_ROOM_INDEX],roomArray))
         cout << "You Hear a Zombie nearby..." << endl;
     // if the grail is nearby the player can sense it, otherwise do nothing
     if(checkNearGrail(gameArray[CURRENT_ROOM_INDEX], roomArray))
