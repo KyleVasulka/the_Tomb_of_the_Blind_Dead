@@ -90,6 +90,8 @@ void moveZombie(int gameArray[], int roomArray[][7]);
 bool validateSelection(std::string validate);
 void doSelection(std::string controll, int gameArray[], int roomArray[][7]);
 void waitForMove(int gameArray[], int roomArray[][7]);
+void checkRoom(int gameArray[], int roomArray[][7]);
+void running(int gameArray[], int roomArray[][7]);
 
 int main()
 {
@@ -193,18 +195,6 @@ bool menu(int &currentRoom, int &zombieRoom, int &numBullets, int &numRooms, boo
         readMaze(roomArray, gameArray, numRooms);
         setup(currentRoom, zombieRoom, numBullets, numRooms, haveGrail, roomArray, gameArray);
         printMemory(gameArray, roomArray);
-        while(1)
-        {
-        waitForMove(gameArray, roomArray);
-        }
- int temp;
-  while (1)
-{
-     showConnectedRooms(gameArray[0], roomArray);
-    cin >> temp;
-    moveRoom(temp, gameArray,roomArray);
-   printMemory(gameArray, roomArray);
-}
     }
         //if exit is called end the program
         if (selection == 3)
@@ -257,20 +247,21 @@ void setup(int &currentRoom, int &zombieRoom, int &numBullets, int &numRooms, bo
 {
     srand(time(NULL));
     //current room to 1
-    gameArray[0] = 1;
+    gameArray[CURRENT_ROOM_INDEX] = 1;
 
 
     //haveGrail to 0
-    gameArray[4] = 0;
+    gameArray[HAVE_GRAIL_INDEX] = 0;
 
     //numBullets to MAX_Bullets
-    gameArray[2] = MAX_BULLETS;
+    gameArray[NUM_BULLETS_INDEX] = MAX_BULLETS;
 
     readMaze( roomArray, gameArray, numRooms);
     placeZombie( roomArray, gameArray, numRooms);
     placeGrail(roomArray, gameArray, numRooms);
 
-    roomArray[0][4] = 1;
+    roomArray[0][PLAYER_INDEX] = 1;
+    running(gameArray, roomArray);
 }
 
 void readMaze(int roomArray[][7], int gameArray[], int & numRooms)
@@ -607,22 +598,28 @@ void waitForMove(int gameArray[], int roomArray[][7])
 void checkRoom(int gameArray[7], int roomArray[][7])
 {
     //display the current room and number of bullets to the user
-    cout << "Current room: " << gameArray[PLAYER_INDEX] << endl
+    cout << "Current room: " << gameArray[CURRENT_ROOM_INDEX] << endl
     << "Bullets: " << gameArray[NUM_BULLETS_INDEX] << endl;
     //if the player has the grail then say so
-    if(gameArray[GRAIL_INDEX])
-        cout << "YOUR HAVE THE GRAIL";
+    if(gameArray[HAVE_GRAIL_INDEX])
+        cout << "YOUR HAVE THE GRAIL" << endl;
     //if zombie is nearby, the player can hear it
+    if (checkNearZombie(gameArray[NUM_ROOMS_INDEX],roomArray)))
+        cout << "You Hear a Zombie nearby..." << endl;
     // if the grail is nearby the player can sense it, otherwise do nothing
-    //show rooms connected t this
-    showConnectedRooms(gameArray[])
+    if(checkNearGrail(gameArray[CURRENT_ROOM_INDEX], roomArray))
+        cout << "You Sense the grails presence..." << endl;
+    //show rooms connected to the current one
+    showConnectedRooms(gameArray[CURRENT_ROOM_INDEX], roomArray);
     //show the menu and wait on user input
-    waitForMove(gameArray, roomArray)
+    waitForMove(gameArray, roomArray);
 }
-/*
 
+void running(int gameArray[], int roomArray[][7])
+{
+    while(gameArray[CURRENT_ROOM_INDEX] != -1)
+    {
+        checkRoom(gameArray,roomArray);
 
-
-
-    */
-
+    }
+}
