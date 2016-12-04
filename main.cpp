@@ -538,3 +538,33 @@ bool validateSelection(std::string validate)
     else
     return false;
 }
+
+//allows user to control the game
+void doSelection(std::string controll, int gameArray[], int roomArray[][7])
+{
+    std::string firstLetter = controll.substr(0,1);
+    //depending on first char call appropriate function
+    int number;
+    //q quits the game
+    if(firstLetter.compare("Q") == 0)
+        exit(0);
+    //D prints memory
+    if(firstLetter.compare("D") == 0)
+    printMemory(gameArray, roomArray);
+    //S -# shoots the indicated room
+    if(firstLetter.compare("S") == 0)
+    {
+        cin >> number;
+        shootRoom(number,gameArray,roomArray);
+    }
+
+    //M -# move into the indicated room
+    if(firstLetter.compare("M") == 0)
+    {
+        cin >> number;
+        moveRoom(number, gameArray,roomArray);
+    }
+
+    //after completing players instructions move zombie
+    moveZombie(gameArray, roomArray);
+}
