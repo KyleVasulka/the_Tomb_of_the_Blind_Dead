@@ -81,6 +81,8 @@ bool isConnected(int targetRoom, int gameArray[], int roomArray[][7]);
 
 
 //PART 3 prototypes
+//handels movement of character
+void moveRoom(int roomWanted, int gameArray[], int roomArray[][7]);
 
 int main()
 {
@@ -98,7 +100,9 @@ int main()
 
 
 
+
    reset(currentRoom, zombieRoom, numBullets, numRooms, haveGrail, gameArray, roomArray);
+
    menu(currentRoom, zombieRoom, numBullets, numRooms, haveGrail, gameArray, roomArray, menuSelection);
 
 
@@ -182,7 +186,14 @@ bool menu(int &currentRoom, int &zombieRoom, int &numBullets, int &numRooms, boo
         readMaze(roomArray, gameArray, numRooms);
         setup(currentRoom, zombieRoom, numBullets, numRooms, haveGrail, roomArray, gameArray);
         printMemory(gameArray, roomArray);
-
+ int temp;
+  while (1)
+{
+     showConnectedRooms(gameArray[0], roomArray);
+    cin >> temp;
+    moveRoom(temp, gameArray,roomArray);
+   printMemory(gameArray, roomArray);
+}
     }
         //if exit is called end the program
         if (selection == 3)
@@ -265,6 +276,7 @@ void readMaze(int roomArray[][7], int gameArray[], int & numRooms)
 
 
     inputFile >> numRooms;
+    gameArray[3] = numRooms;
     for(int i = 0 ; i < numRooms; i++)
         for(int j = 0; j < 7; j ++)
             inputFile >> roomArray[i][j];
@@ -308,9 +320,9 @@ bool checkZombie (int x, int roomArray[][7])
 
 //precondition: get room number to be checked
 //postcondition: return true if Grail in the room
-bool checkGrail (int numRooms, int roomArray[][7])
+bool checkGrail (int roomnumber, int roomArray[][7])
 {
-    if(roomArray[numRooms-1][GRAIL_INDEX] == 1)
+    if(roomArray[roomnumber-1][GRAIL_INDEX] == 1)
     {
         cout << "//check grail == true\n";
         return true;
@@ -389,4 +401,58 @@ bool isConnected(int targetRoom, int gameArray[], int roomArray[][7])
             isConnected = true;
             return isConnected;
 }
+
+void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
+{
+    //test to see if the given room is connected to the current one
+    if(isConnected(roomWanted, gameArray, roomArray))
+    {
+
+        //if in here it is okay to move
+
+        //-if so set the current room player index to 0, the given room player index to 1 and the current room to the parameter.
+
+        roomArray[gameArray[0]-1][4] = 0;
+
+        roomArray[roomWanted - 1][4] = 1;
+
+        gameArray[0] = roomWanted;
+
+
+
+       //if the player already had the grail move the grail from the old to the new roomWanted
+       if(gameArray[4] == true)
+       {
+           for(int i = 0; i < gameArray[3]; i++)
+        {
+            roomArray[i][6] = 0;
+           }
+
+            roomArray[roomWanted - 1][6] = 1;
+       }
+
+        //if player finds the grail in the new room, set haveGrail to true
+        if (checkGrail (gameArray[0], roomArray))
+        {
+
+            //if in here the grail is in this room!
+            gameArray[4] = true;
+        }
+
+        //if the player had the grail with him and is now entered room 1, winner and end game
+        if((gameArray[0] == 1) && gameArray[4])
+        {
+
+            winOrLose(1, gameArray);
+            exit(0);
+        }
+    }
+    else//if not, let the user know they cannot move there
+    {
+            cout << "you can not move there, It is not connected to you, please enter a room that is connected to you!";
+    }
+    return;
+}
+
+
 
