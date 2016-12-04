@@ -287,7 +287,7 @@ void readMaze(int roomArray[][7], int gameArray[], int & numRooms)
 
 }
 
-//this function returns a random room
+//this function returns a random room(index)
 int getRandomRoom(int gameArray[5], int numRooms)
 {
     return (rand() % numRooms);
@@ -297,11 +297,12 @@ int getRandomRoom(int gameArray[5], int numRooms)
 void placeZombie(int roomArray[][7], int gameArray[5], int numRooms)
 {
     int randomRoom = 0;
- while ( randomRoom < (numRooms/2))
+ while ((randomRoom < (numRooms/2)) || (randomRoom == 0))
     {
         randomRoom = getRandomRoom(gameArray,numRooms);
     }
-    roomArray[randomRoom][ZOMBIE_INDEX] = 1;
+
+    roomArray[randomRoom - 1][ZOMBIE_INDEX] = 1;
     gameArray[ZOMBIE_ROOM_INDEX] = randomRoom;
 }
 
@@ -507,13 +508,20 @@ void moveZombie(int gameArray[], int roomArray[][7])
        direction = rand() % 4;
 
        //check if the room is free in that direction
-       if(roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction] != 0)
+       if(roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction] != 0)
        {
-           //move zombie
-            roomArray[gameArray[ZOMBIE_ROOM_INDEX]-1][ZOMBIE_INDEX] = 0;
-            roomArray[roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction]][ZOMBIE_INDEX] = 1;
-            gameArray[ZOMBIE_ROOM_INDEX] = roomArray[gameArray[ZOMBIE_ROOM_INDEX]][direction];
+           //printMemory(gameArray,roomArray);
+           //if in here room is free so move zombie
+           //make where the zombie currently is 0
+            cout <<"ganeArray where zombie will be eliminated: " << gameArray[ZOMBIE_ROOM_INDEX]-1;
+            roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][ZOMBIE_INDEX] = 0;
+            //make the new location of the zombie 1
+            roomArray[roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction] - 1][ZOMBIE_INDEX] = 1;
+            //update gameArray as to the whereabouts of the zombie
+            gameArray[ZOMBIE_ROOM_INDEX] = roomArray[gameArray[ZOMBIE_ROOM_INDEX] - 1][direction];
+            cout << "Zombie has moved to room " << gameArray[ZOMBIE_ROOM_INDEX];
        }
+       cout << endl << "zombie stayed where he is because of direction:" << direction;
         //if not zombie stays where he is
     }
    return;
@@ -604,7 +612,7 @@ void checkRoom(int gameArray[7], int roomArray[][7])
     if(gameArray[HAVE_GRAIL_INDEX])
         cout << "YOUR HAVE THE GRAIL" << endl;
     //if zombie is nearby, the player can hear it
-    if (checkNearZombie(gameArray[NUM_ROOMS_INDEX],roomArray)))
+    if (checkNearZombie(gameArray[NUM_ROOMS_INDEX],roomArray))
         cout << "You Hear a Zombie nearby..." << endl;
     // if the grail is nearby the player can sense it, otherwise do nothing
     if(checkNearGrail(gameArray[CURRENT_ROOM_INDEX], roomArray))
