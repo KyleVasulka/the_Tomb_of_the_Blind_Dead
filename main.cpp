@@ -12,6 +12,7 @@
 #include<cstdlib>
 #include<ctime>
 #include<cctype>
+#include<string>
 using std::cout;
 using std::cin;
 using std::endl;
@@ -85,6 +86,8 @@ bool isConnected(int targetRoom, int gameArray[], int roomArray[][7]);
 void moveRoom(int roomWanted, int gameArray[], int roomArray[][7]);
 //shoots a room that is next to you to maybe kill a zombie
 void shootRoom(int roomToShoot,int gameArray[],int roomArray[][7]);
+void moveZombie(int gameArray[], int roomArray[][7]);
+bool validateSelection(std::string validate);
 
 int main()
 {
@@ -516,9 +519,22 @@ void moveZombie(int gameArray[], int roomArray[][7])
        }
         //if not zombie stays where he is
     }
-
    return;
-
 }
 
-
+ //takes a string and makes sure the first character is Q D S or M,
+    //returns true if it is and false if it is not
+bool validateSelection(std::string validate)
+{
+   std::string firstLetter = validate.substr(0,1);
+   if(firstLetter.compare("Q") == 0)
+    return true;
+    if(firstLetter.compare("D") == 0)
+    return true;
+    if(firstLetter.compare("S") == 0)
+    return true;
+    if(firstLetter.compare("M") == 0)
+    return true;
+    else
+    return false;
+}
