@@ -449,11 +449,8 @@ void moveRoom(int roomWanted, int gameArray[],int roomArray[][7])
 
         //if the player had the grail with him and is now entered room 1, winner and end game
         if((gameArray[CURRENT_ROOM_INDEX] == 1) && gameArray[HAVE_GRAIL_INDEX])
-        {
-
             winOrLose(1, gameArray);
-            exit(0);
-        }
+
         //if player goes into the room with the zombie in it, loser and end the game
     if(gameArray[CURRENT_ROOM_INDEX] == gameArray[ZOMBIE_ROOM_INDEX])
     winOrLose(false, gameArray);
